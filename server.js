@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
+const { query } = require('express');
 var app = express();
 var PORT = process.env.PORT || 3000;
 var todos = [];
@@ -13,7 +14,14 @@ app.get('/',function (req, res){
 });
 
 app.get('/todos', function(req, res){
-    res.json(todos);
+    var queryParams = req.query;
+    var filteredTodos = todos;
+    if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'True') {
+        filteredTodos = _.where(filteredTodos, {completed: true});        
+    } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
+        filteredTodos = _.where(filteredTodos, {completed: false});        
+    }
+    res.json(filteredTodos);
 });
 
 app.get('/todos/:id',function(req, res){
